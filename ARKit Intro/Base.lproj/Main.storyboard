@@ -21,32 +21,6 @@
                             <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8gb-dn-GAD">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                             </arscnView>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="eAM-Yh-Dqe">
-                                <rect key="frame" x="0.0" y="577" width="375" height="70"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Clh-Qo-Bu2">
-                                        <rect key="frame" x="0.0" y="0.0" width="187.5" height="70"/>
-                                        <state key="normal" title="Set Starting Point">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="startingPointButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="fGB-TT-BMk"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dSc-vg-vuh">
-                                        <rect key="frame" x="187.5" y="0.0" width="187.5" height="70"/>
-                                        <state key="normal" title="Measure">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="endingPointButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="adE-eI-ktk"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="70" id="n4e-09-aXL"/>
-                                </constraints>
-                            </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1.34m" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DzK-ol-RSz">
                                 <rect key="frame" x="0.0" y="529" width="375" height="40"/>
                                 <constraints>
@@ -56,39 +30,39 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fo3-bM-xwK">
-                                <rect key="frame" x="177.5" y="323.5" width="20" height="20"/>
-                                <color key="backgroundColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dSc-vg-vuh">
+                                <rect key="frame" x="87.5" y="585" width="200" height="50"/>
+                                <color key="backgroundColor" red="0.41176470590000003" green="0.6588235294" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="2Su-Mp-zPz"/>
-                                    <constraint firstAttribute="width" constant="20" id="jbP-7M-p8N"/>
+                                    <constraint firstAttribute="height" constant="50" id="dn1-T0-xpQ"/>
+                                    <constraint firstAttribute="width" constant="200" id="hiJ-e5-z0s"/>
                                 </constraints>
-                            </view>
+                                <state key="normal" title="Measure">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="measureButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="JjO-dM-e9d"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="fQZ-KI-GVf" firstAttribute="bottom" secondItem="8gb-dn-GAD" secondAttribute="bottom" id="6EY-tE-5sC"/>
-                            <constraint firstItem="eAM-Yh-Dqe" firstAttribute="centerX" secondItem="U0K-SW-4ec" secondAttribute="centerX" id="CwC-Rs-iFp"/>
-                            <constraint firstItem="Fo3-bM-xwK" firstAttribute="centerY" secondItem="U0K-SW-4ec" secondAttribute="centerY" id="EID-7B-jMm"/>
+                            <constraint firstItem="dSc-vg-vuh" firstAttribute="top" secondItem="DzK-ol-RSz" secondAttribute="bottom" constant="16" id="AsE-ZJ-sKx"/>
                             <constraint firstItem="8gb-dn-GAD" firstAttribute="leading" secondItem="fQZ-KI-GVf" secondAttribute="leading" id="Hl5-2C-GtU"/>
-                            <constraint firstItem="eAM-Yh-Dqe" firstAttribute="top" secondItem="DzK-ol-RSz" secondAttribute="bottom" constant="8" id="KRV-Cf-9qm"/>
+                            <constraint firstItem="fQZ-KI-GVf" firstAttribute="bottom" secondItem="dSc-vg-vuh" secondAttribute="bottom" constant="32" id="Suu-pk-JAl"/>
                             <constraint firstItem="8gb-dn-GAD" firstAttribute="top" secondItem="fQZ-KI-GVf" secondAttribute="top" id="Wec-9m-rJW"/>
                             <constraint firstItem="fQZ-KI-GVf" firstAttribute="trailing" secondItem="DzK-ol-RSz" secondAttribute="trailing" id="ZlB-cT-VVp"/>
                             <constraint firstItem="DzK-ol-RSz" firstAttribute="leading" secondItem="fQZ-KI-GVf" secondAttribute="leading" id="aEN-H8-zGV"/>
-                            <constraint firstItem="eAM-Yh-Dqe" firstAttribute="leading" secondItem="fQZ-KI-GVf" secondAttribute="leading" id="czK-ne-V6L"/>
-                            <constraint firstItem="Fo3-bM-xwK" firstAttribute="centerX" secondItem="U0K-SW-4ec" secondAttribute="centerX" id="grm-FY-irx"/>
-                            <constraint firstItem="fQZ-KI-GVf" firstAttribute="bottom" secondItem="eAM-Yh-Dqe" secondAttribute="bottom" constant="20" id="lvG-Zo-uxh"/>
                             <constraint firstItem="fQZ-KI-GVf" firstAttribute="trailing" secondItem="8gb-dn-GAD" secondAttribute="trailing" id="oKz-Sk-8t8"/>
-                            <constraint firstItem="fQZ-KI-GVf" firstAttribute="trailing" secondItem="eAM-Yh-Dqe" secondAttribute="trailing" id="uGm-pr-hyA"/>
+                            <constraint firstItem="dSc-vg-vuh" firstAttribute="centerX" secondItem="U0K-SW-4ec" secondAttribute="centerX" id="qO3-fs-Lae"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="fQZ-KI-GVf"/>
                     </view>
                     <connections>
-                        <outlet property="endingPointButton" destination="dSc-vg-vuh" id="9hi-gh-8rC"/>
+                        <outlet property="measureButton" destination="dSc-vg-vuh" id="70K-eD-WF3"/>
                         <outlet property="measurementLabel" destination="DzK-ol-RSz" id="hk0-2r-TKJ"/>
                         <outlet property="sceneView" destination="8gb-dn-GAD" id="tls-tY-pbd"/>
-                        <outlet property="startingPointButton" destination="Clh-Qo-Bu2" id="c7p-E1-JCG"/>
-                        <outlet property="targetView" destination="Fo3-bM-xwK" id="fmJ-t1-efS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>

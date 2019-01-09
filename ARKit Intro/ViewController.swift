@@ -16,8 +16,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var targetView: UIView!
     @IBOutlet weak var measurementLabel: UILabel!
-    @IBOutlet weak var startingPointButton: UIButton!
-    @IBOutlet weak var endingPointButton: UIButton!
+    @IBOutlet weak var measureButton: UIButton!
     
     //MARK:- Properties
     var firstBox: SCNNode?
@@ -32,8 +31,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
-        startingPointButton.setTitle("Set First Point", for: .normal)
-        measurementLabel.text = ""
+        measurementLabel.text = "Select first point"
+        measureButton.isEnabled = false
+        measureButton.alpha = 0.5
         
     }
     
@@ -58,59 +58,79 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     //MARK:- IBActions
-    @IBAction func startingPointButtonTapped(_ sender: UIButton) {
-        
-        if firstBox == nil {
-            firstBox = createBoxPoint()
-            startingPointButton.setTitle("Set Second Point", for: .normal)
-        } else if firstBox != nil {
-            if secondBox == nil {
-                secondBox = createBoxPoint()
-            }
-        }
-    }
-    
-    @IBAction func endingPointButtonTapped(_ sender: UIButton) {
+    @IBAction func measureButtonTapped(_ sender: UIButton) {
         if firstBox != nil && secondBox != nil {
             calcDistance()
-            endingPointButton.setTitle("Reset", for: .normal)
+            measureButton.setTitle("Reset", for: .normal)
         }
-        
+
         if sender.titleLabel?.text == "Reset" {
-            print("resetting")
             resetBoxPoints()
-            endingPointButton.setTitle("Measure", for: .normal)
+            measureButton.setTitle("Measure", for: .normal)
         }
     }
     
     //MARK:- Placing box objects in the ARScene
-    func createBoxPoint() -> SCNNode? {
+    func createBoxAt(point: CGPoint) {
         //add a block to the 3D world when the user taps
-        let userTouch = sceneView.center
         
-        //where is the touch in the AR scene
-        let testResults = sceneView.hitTest(userTouch, types: .featurePoint)
-        
-        if let theResult = testResults.first {
-            //create a block in AR World
-            let box = SCNBox(width: 0.005, height: 0.005, length: 0.005, chamferRadius: 0.005)
-            let material = SCNMaterial()
-            material.diffuse.contents = UIColor.green
-            box.firstMaterial = material
+        if firstBox == nil {
+            //where is the touch in the AR scene
+            let testResults = sceneView.hitTest(point, types: .featurePoint)
             
-            let boxNode = SCNNode(geometry: box)
-            boxNode.name = "measurePoint"
-            let boxX = theResult.worldTransform.columns.3.x
-            let boxY = theResult.worldTransform.columns.3.y
-            let boxZ = theResult.worldTransform.columns.3.z
+            if let theResult = testResults.first {
+                //create a block in AR World
+                let box = SCNBox(width: 0.005, height: 0.005, length: 0.005, chamferRadius: 0.005)
+                let material = SCNMaterial()
+                material.diffuse.contents = UIColor.green
+                box.firstMaterial = material
+                
+                let boxNode = SCNNode(geometry: box)
+                boxNode.name = "measurePoint"
+                let boxX = theResult.worldTransform.columns.3.x
+                let boxY = theResult.worldTransform.columns.3.y
+                let boxZ = theResult.worldTransform.columns.3.z
+                
+                boxNode.position = SCNVector3(boxX, boxY, boxZ)
+                
+                //add the box to the world
+                firstBox = boxNode
+                sceneView.scene.rootNode.addChildNode(firstBox!)
+                measurementLabel.text = "Select second point"
+            }
+        } else if secondBox == nil {
+            //where is the touch in the AR scene
+            let testResults = sceneView.hitTest(point, types: .featurePoint)
             
-            boxNode.position = SCNVector3(boxX, boxY, boxZ)
-            
-            //add the box to the world
-            sceneView.scene.rootNode.addChildNode(boxNode)
-            return boxNode
+            if let theResult = testResults.first {
+                //create a block in AR World
+                let box = SCNBox(width: 0.005, height: 0.005, length: 0.005, chamferRadius: 0.005)
+                let material = SCNMaterial()
+                material.diffuse.contents = UIColor.green
+                box.firstMaterial = material
+                
+                let boxNode = SCNNode(geometry: box)
+                boxNode.name = "measurePoint"
+                let boxX = theResult.worldTransform.columns.3.x
+                let boxY = theResult.worldTransform.columns.3.y
+                let boxZ = theResult.worldTransform.columns.3.z
+                
+                boxNode.position = SCNVector3(boxX, boxY, boxZ)
+                
+                //add the box to the world
+                secondBox = boxNode
+                sceneView.scene.rootNode.addChildNode(secondBox!)
+                
+                //enable the measurement button
+                measurementLabel.text = "Click measure button"
+                measureButton.isEnabled = true
+                measureButton.alpha = 1.0
+                //return boxNode
+            } else if firstBox != nil && secondBox != nil {
+                return
+            }
         }
-        return nil
+        
     }
     
     //MARK:- Calculating the distance between two points
@@ -122,24 +142,27 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let vector = SCNVector3Make(secondBox.position.x - firstBox.position.x, secondBox.position.y - firstBox.position.y, secondBox.position.z - firstBox.position.z)
         
         let distance = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z) * 39.37 //inches
-        updateDistanceLabel(distance: String(distance))
+        updateDistanceLabel(distance: "\(distance) inches")
     }
     
     //MARK:- Updating the UI
     func updateDistanceLabel(distance: String) {
-        measurementLabel.text = "\(distance) in."
+        measurementLabel.text = "\(distance)"
     }
     
     //MARK:- Resetting the scene for new measurements
     func resetBoxPoints() {
         for node in sceneView.scene.rootNode.childNodes {
             if node.name == "measurePoint" {
+                //could obviously handle this with direct calls to the two nodes, but leaving this in allows for the flexibility of measuring multiple points in the future
                 node.removeFromParentNode()
             }
         }
         updateDistanceLabel(distance: "")
-        //endingPointButton.setTitle("Measure", for: .normal)
-        startingPointButton.setTitle("Set First Point", for: .normal)
+        
+        //reset the measure button
+        measureButton.isEnabled = false
+        measureButton.alpha = 0.5
         
         //nil the values
         firstBox = nil
@@ -147,7 +170,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
     }
     
-    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touchPoint = touches.first else { return }
+        let touchLocation = touchPoint.location(in: sceneView)
+        
+        createBoxAt(point: touchLocation)
+    }
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
 //        //when a surface is found, a node will be added

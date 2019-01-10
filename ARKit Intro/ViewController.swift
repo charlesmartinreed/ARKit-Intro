@@ -28,6 +28,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Set the view's delegate
         sceneView.delegate = self
         
+        // this delegate allows us to save our AR scene
+        sceneView.session.delegate = self
+        
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
@@ -46,6 +49,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         //for now, just detecting flat surfaces like tables. The vertical option is for detecting surfaces like walls.
         configuration.planeDetection = .horizontal
 
+        //check for an old AR map in User Defaults
+        if let mapData = UserDefaults.standard.data(forKey: "ARMap") {
+            if let map = try? NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: mapData) {
+                //if we're here, we had an old map. Set it to the initial world map using configuration.
+                configuration.initialWorldMap = map
+            }
+        }
+        
         // Run the view's session
         sceneView.session.run(configuration)
     }
@@ -55,6 +66,31 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Pause the view's session
         sceneView.session.pause()
+    }
+    
+    //MARK:- AR Session Delegate protocol methods
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        //checks where the map is
+        if frame.worldMappingStatus == .mapped {
+            print("Mapping is complete")
+        } else {
+            print("Mapping in progress")
+        }
+    }
+    
+    func saveARMapping() {
+        //grab the current map
+        sceneView.session.getCurrentWorldMap { (map, error) in
+            if let err = error {
+                fatalError("Unable to get current map: \(err.localizedDescription)")
+            }
+            if let map = map {
+                //use NSKeyedArchiver in order to prepare data for save to NSUserDefaults
+                if let mapData = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
+                    UserDefaults.standard.set(mapData, forKey: "ARMap")
+                }
+            }
+        }
     }
     
     //MARK:- IBActions
@@ -125,7 +161,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 measurementLabel.text = "Click measure button"
                 measureButton.isEnabled = true
                 measureButton.alpha = 1.0
-                //return boxNode
+                
+                //save the points on the map
+                saveARMapping()
             } else if firstBox != nil && secondBox != nil {
                 return
             }
@@ -217,4 +255,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
     }
+}
+
+extension ViewController : ARSessionDelegate {
+    
 }

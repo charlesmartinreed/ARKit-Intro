@@ -112,25 +112,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         if firstBox == nil {
             //where is the touch in the AR scene
-            let testResults = sceneView.hitTest(point, types: .featurePoint)
+            let testResults = sceneView.hitTest(point, types: .featurePoint) //point detected by ARKit as a continuous surface
             
             if let theResult = testResults.first {
-                //create a block in AR World
-                let box = SCNBox(width: 0.005, height: 0.005, length: 0.005, chamferRadius: 0.005)
-                let material = SCNMaterial()
-                material.diffuse.contents = UIColor.green
-                box.firstMaterial = material
-                
-                let boxNode = SCNNode(geometry: box)
-                boxNode.name = "measurePoint"
-                let boxX = theResult.worldTransform.columns.3.x
-                let boxY = theResult.worldTransform.columns.3.y
-                let boxZ = theResult.worldTransform.columns.3.z
-                
-                boxNode.position = SCNVector3(boxX, boxY, boxZ)
-                
-                //add the box to the world
-                firstBox = boxNode
+                firstBox = addSphere(at: theResult)
                 sceneView.scene.rootNode.addChildNode(firstBox!)
                 measurementLabel.text = "Select second point"
             }
@@ -139,25 +124,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             let testResults = sceneView.hitTest(point, types: .featurePoint)
             
             if let theResult = testResults.first {
-                //create a block in AR World
-                let box = SCNBox(width: 0.005, height: 0.005, length: 0.005, chamferRadius: 0.005)
-                let material = SCNMaterial()
-                material.diffuse.contents = UIColor.green
-                box.firstMaterial = material
-                
-                let boxNode = SCNNode(geometry: box)
-                boxNode.name = "measurePoint"
-                let boxX = theResult.worldTransform.columns.3.x
-                let boxY = theResult.worldTransform.columns.3.y
-                let boxZ = theResult.worldTransform.columns.3.z
-                
-                boxNode.position = SCNVector3(boxX, boxY, boxZ)
-                
-                //add the box to the world
-                secondBox = boxNode
+                secondBox = addSphere(at: theResult)
                 sceneView.scene.rootNode.addChildNode(secondBox!)
                 
-                //enable the measurement button
                 measurementLabel.text = "Click measure button"
                 measureButton.isEnabled = true
                 measureButton.alpha = 1.0
@@ -170,6 +139,26 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
         
     }
+    
+    func addSphere(at hitResult: ARHitTestResult) -> SCNNode {
+        
+        let dotGeometry = SCNSphere(radius: 0.005) //about half a centimenter in radius
+        let material = SCNMaterial()
+        material.diffuse.contents = UIColor.red
+        dotGeometry.materials = [material]
+        
+        let dotNode = SCNNode(geometry: dotGeometry)
+        dotNode.name = "measurePoint"
+        
+        let xPos = hitResult.worldTransform.columns.3.x
+        let yPos = hitResult.worldTransform.columns.3.y
+        let zPos = hitResult.worldTransform.columns.3.z
+        dotNode.position = SCNVector3(xPos, yPos, zPos)
+        
+        return dotNode
+    }
+    
+    
     
     //MARK:- Calculating the distance between two points
     func calcDistance() {

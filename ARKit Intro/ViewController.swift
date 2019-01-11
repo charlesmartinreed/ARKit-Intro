@@ -21,6 +21,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     //MARK:- Properties
     var firstBox: SCNNode?
     var secondBox: SCNNode?
+    var measure3DText: SCNNode!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -148,7 +149,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         dotGeometry.materials = [material]
         
         let dotNode = SCNNode(geometry: dotGeometry)
-        dotNode.name = "measurePoint"
         
         let xPos = hitResult.worldTransform.columns.3.x
         let yPos = hitResult.worldTransform.columns.3.y
@@ -180,6 +180,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let distance = sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2))
         //let distance = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)
         updateDistanceLabel(distance: "\(distance) meters")
+        updateDistanceText(text: "\(distance) meters", position: secondBox.position)
     }
     
     //MARK:- Updating the UI
@@ -187,14 +188,44 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         measurementLabel.text = "\(distance)"
     }
     
+    func updateDistanceText(text: String, position: SCNVector3) {
+        //creating a text geometry
+        let textGeometry = SCNText(string: text, extrusionDepth: 1.0) //1.0 means it extrudes from -0.5 to 0.5 in the Z axis.
+        
+        //creating the "texture" or material
+        textGeometry.firstMaterial?.diffuse.contents = UIColor.red
+        
+        //creating a node
+        measure3DText = SCNNode(geometry: textGeometry)
+        
+        //give the textNode a position and scale it down to 1% of its original size
+        //textNode.position = SCNVector3(0, 0.01, -0.1) //relative to the camera coordinate
+        
+        measure3DText.position = SCNVector3(position.x, position.y + 0.01, position.z)
+        measure3DText.scale = SCNVector3(0.001, 0.001, 0.001)
+        
+        //add to the scene
+        sceneView.scene.rootNode.addChildNode(measure3DText)
+        
+    }
+    
     //MARK:- Resetting the scene for new measurements
     func resetBoxPoints() {
-        for node in sceneView.scene.rootNode.childNodes {
-            if node.name == "measurePoint" {
-                //could obviously handle this with direct calls to the two nodes, but leaving this in allows for the flexibility of measuring multiple points in the future
-                node.removeFromParentNode()
-            }
+//        for node in sceneView.scene.rootNode.childNodes {
+//            if node.name == "measurePoint" {
+//                //could obviously handle this with direct calls to the two nodes, but leaving this in allows for the flexibility of measuring multiple points in the future
+//                node.removeFromParentNode()
+//            }
+//            if node.name == "measure3DText" {
+//                node.removeFromParentNode()
+//            }
+//        }
+        firstBox?.removeFromParentNode()
+        secondBox?.removeFromParentNode()
+        if let measure3DTextNode = measure3DText {
+            measure3DText.removeFromParentNode()
         }
+        
         updateDistanceLabel(distance: "")
         
         //reset the measure button

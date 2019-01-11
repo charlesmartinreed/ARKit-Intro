@@ -165,11 +165,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         guard let firstBox = firstBox else { return }
         guard let secondBox = secondBox else { return }
         
-        //using the pythagorean theorem to figure out our distance
-        let vector = SCNVector3Make(secondBox.position.x - firstBox.position.x, secondBox.position.y - firstBox.position.y, secondBox.position.z - firstBox.position.z)
+        //each vector has an X, Y and Z coordinate
+        //in a 3D space, figuring out a space rr
         
-        let distance = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z) * 39.37 //inches
-        updateDistanceLabel(distance: "\(distance) inches")
+        //using a variant of the pythagorean theorem to figure out our distance in 3d space
+        //d = sqrt(a*a + b*b + c*c), where d = distance and a, b, c are vector points in that 3d space
+        let a = secondBox.position.x - firstBox.position.x
+        let b = secondBox.position.y - firstBox.position.y
+        let c = secondBox.position.z - firstBox.position.z
+        
+        //let vector = SCNVector3Make(a, b, c)
+        
+        //now, we can use pythogorean theorem to work out the distance
+        let distance = sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2))
+        //let distance = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)
+        updateDistanceLabel(distance: "\(distance) meters")
     }
     
     //MARK:- Updating the UI
